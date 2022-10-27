@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% block body %}
+
+<div class="m-3">
+  <h1>{{ review.title }}</h1>
+  <hr>
+  <p>글쓴이:<a href="{% url 'accounts:detail' review.user.id %}" class="text-decoration-none">{{ review.user }}</a></p>
+  <p>내용:{{ review.content }}</p>
+  {% if review.image %}
+  <img src="{{ review.image.url }}" width="400">
+  {% endif %}
+  <div class="d-grid gap-2 d-flex justify-content-end">
+    {% if request.user == review.user %}
+    <a href="{% url 'reviews:update' review.pk %}" class="btn btn-primary">수정</a>
+    <form action="{% url 'reviews:delete' review.pk %}" method="POST">
+      {% csrf_token %}
+      <input type="submit" value="삭제" class="btn btn-primary">
+    </form>
+    {% endif %}
+  </div>
+</div>
+<!--좋아요-->
+<div class="m-3">
+  {% if request.user.is_authenticated %}
+    {% if request.user in review.like_users.all %}
+      <a href="{% url 'reviews:like' review.pk %}" class="btn btn-outline-secondary">좋아요 취소</a>
+    {% else %}
+      <a href="{% url 'reviews:like' review.pk %}" class="btn btn-outline-danger">좋아요</a>
+    {% endif %}
+  {% else %}
+    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">로그인이 필요합니다</a>
+  {% endif %}
+  <button type="button" class="btn btn-danger">{{ review.like_users.count }}</button>
+</div>
+<!--댓글-->
+<div class="m-3">
+  <h3 class="my-3">댓글 ({{ comments.count }})</h3>
+  {% for comment in comments %}
+    <div class="d-flex flex-row justify-content-between">
+      <p><a href="{% url 'accounts:detail' comment.user.id %}" class="text-decoration-none">{{ comment.user }}</a> | {{ comment.content }}</p>
+      {% if request.user == comment.user %}
+      <form action="{% url 'reviews:comment_delete' review.pk comment.pk%}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="삭제" class="btn btn-outline-danger">
+      </form>
+      {% endif %}
+    </div>
+    <hr>    
+  {% empty %}
+    <p>댓글이 없어요 ㅠ_ㅠ</p>
+  {% endfor %}
+  {% if request.user.is_authenticated %}
+  <form action="{% url 'reviews:comment_create' review.id %}" method="POST">
+    {% csrf_token %}
+    {% bootstrap_form comment_form layout='inline'%}
+    {% bootstrap_button button_type="submit" content="작성" %}
+  </form>
+  {% else %}
+  <p>로그인을 해야 댓글을 작성할 수 있습니다.</p>
+  {% endif %}
+</div>
+{% endblock %}

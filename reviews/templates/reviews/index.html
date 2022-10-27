@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block body %}
+  <div class="row m-4">
+    <div class="col">
+      <h1>리뷰 목록</h1>
+    </div>
+    <div class="col text-end">
+      <a href="{% url 'reviews:create' %}" class="btn btn-outline-success">글쓰기</a>
+    </div>
+    <hr>
+    {% for review in reviews %}
+    <div class="col-4" >
+      <div class="card my-3">
+        {% if review.image %}
+        <img src="{{ review.image.url }}" class="card-img-top">
+        {% else %}
+        <img src="{% static 'images/temp.jpg' %}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ review.title }}</h5>
+          <a href="{% url 'reviews:detail' review.id %}" class="btn btn-primary">상세보기</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}
