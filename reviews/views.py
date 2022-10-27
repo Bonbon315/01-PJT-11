@@ -81,3 +81,31 @@ def like(request, pk):
         "likeCount": review.like_users.count(),
     }
     return redirect("reviews:detail", review.pk)
+
+
+# 댓글기능
+@login_required
+def comment_create(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        comment = comment_form.save(commit=False)
+        comment.review = review
+        comment.user = request.user
+        comment.save()
+
+        context = {
+            "content": comment.content,
+            "userName": comment.user.username,
+        }
+        return redirect("reviews:detail", review.pk)
+
+
+@login_required
+def comment_delete(request, review_pk, comment_pk):
+    review = Review.objects.get(pk=review_pk)
+    comment = review.comment_set.get(pk=comment_pk)
+    if request.user == comment.user:
+        if request.method == "POST":
+            comment.delete()
+    return redirect("reviews:detail", review.pk)
