@@ -46,10 +46,10 @@ def index(request):
 
 def detail(request, pk):
     user = get_user_model().objects.get(pk=pk)
-    articles = Review.objects.all()
+    reviews = Review.objects.all()
     context = {
         "user": user,
-        "articles": articles,
+        "reviews": reviews,
     }
     return render(request, "accounts/detail.html", context)
 

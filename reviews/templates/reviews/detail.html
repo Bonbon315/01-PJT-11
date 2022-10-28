@@ -12,10 +12,10 @@
   {% endif %}
   <div class="d-grid gap-2 d-flex justify-content-end">
     {% if request.user == review.user %}
-    <a href="{% url 'reviews:update' review.pk %}" class="btn btn-primary">수정</a>
+    <a href="{% url 'reviews:update' review.pk %}" class="btn btn-success">수정</a>
     <form action="{% url 'reviews:delete' review.pk %}" method="POST">
       {% csrf_token %}
-      <input type="submit" value="삭제" class="btn btn-primary">
+      <input type="submit" value="삭제" class="btn btn-danger">
     </form>
     {% endif %}
   </div>
@@ -53,8 +53,15 @@
   {% if request.user.is_authenticated %}
   <form action="{% url 'reviews:comment_create' review.id %}" method="POST">
     {% csrf_token %}
-    {% bootstrap_form comment_form layout='inline'%}
-    {% bootstrap_button button_type="submit" content="작성" %}
+    <div class="row">
+      <div class="col-11">
+        {% bootstrap_form comment_form layout='inline'%}
+      </div>
+      <div class="col-1">
+        {% bootstrap_button button_type="submit" content="작성"%}
+      </div>
+    </div>
+    
   </form>
   {% else %}
   <p>로그인을 해야 댓글을 작성할 수 있습니다.</p>
