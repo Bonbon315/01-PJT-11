@@ -83,6 +83,11 @@ def like(request, pk):
     return redirect("reviews:detail", review.pk)
 
 
+# 홈페이지
+def home(request):
+    return render(request, "reviews/home.html")
+
+
 # 댓글기능
 @login_required
 def comment_create(request, pk):
